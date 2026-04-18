@@ -28,75 +28,33 @@ def distance_to_change_speed(v_i, v_f, accel):
     return (v_f**2 - v_i**2) / (2 * accel)
 
  
-
- 
-
-# =========================
-
-# SIMULATOR
-
-# =========================
-
- 
-
 class Simulator:
-
- 
-
     def __init__(self, data):
-
         self.car = data["car"]
-
         self.track = data["track"]["segments"]
-
         self.race = data["race"]
 
- 
-
     def simulate(self, strategy):
-
         total_time = 0
-
         current_speed = 0
-
- 
-
+        
         for seg, action in zip(self.track, strategy):
-
             if seg["type"] == "straight":
-
                 t, current_speed = self.simulate_straight(
-
                     current_speed,
-
                     action["target_speed"],
-
                     seg["length_m"],
-
                     action["brake_point"]
-
                 )
-
                 total_time += t
-
- 
 
             else:  # corner
-
                 t, current_speed = self.simulate_corner(
-
                     current_speed,
-
                     seg["radius_m"],
-
                     seg["length_m"]
-
                 )
-
                 total_time += t
-
- 
-
         return total_time
 
  
@@ -250,57 +208,20 @@ class Optimizer:
         for _ in range(iterations):
 
             candidate = self.mutate(best)
-
             t = self.sim.simulate(candidate)
 
- 
-
             if t < best_time:
-
                 best = candidate
-
                 best_time = t
-
- 
-
         return best, best_time
 
- 
-
- 
-
-# =========================
-
-# MAIN
-
-# =========================
-
- 
-
 def main():
-
     data = load_input("input.json")
-
- 
-
     sim = Simulator(data)
-
     opt = Optimizer(sim)
-
- 
-
     best_strategy, best_time = opt.optimize()
-
- 
-
     print("Best Time:", best_time)
-
     print("Strategy:", json.dumps(best_strategy, indent=2))
 
- 
-
- 
-
 if __name__ == "__main__":
-
     main()
